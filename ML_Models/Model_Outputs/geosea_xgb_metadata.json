@@ -1,0 +1,43 @@
+{
+    "model_type": "XGBClassifier",
+    "features": [
+        "temperature",
+        "salinity",
+        "chlorophyll",
+        "nitrate",
+        "phosphate",
+        "pH",
+        "PAR",
+        "kdpar"
+    ],
+    "target": "presence",
+    "spatial_fold_column": "spatial_fold",
+    "number_of_spatial_folds": 5,
+    "prediction_threshold": 0.5,
+    "hyperparameters": {
+        "n_estimators": 400,
+        "learning_rate": 0.05,
+        "max_depth": 6,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "eval_metric": "logloss",
+        "random_state": 42,
+        "n_jobs": -1
+    },
+    "training_samples": 336924,
+    "presence_samples": 165425,
+    "pseudo_absence_samples": 171499,
+    "cross_validation": {
+        "roc_auc_mean": 0.9390857060505693,
+        "roc_auc_std": 0.008699613758886336,
+        "accuracy_mean": 0.8447478187458328,
+        "accuracy_std": 0.012015861304163027,
+        "precision_mean": 0.9539554881983954,
+        "precision_std": 0.01451661704906723,
+        "recall_mean": 0.711752350905442,
+        "recall_std": 0.04218465021158955,
+        "f1_mean": 0.8147481661328092,
+        "f1_std": 0.03171782424088142
+    },
+    "artifact": "models\\geosea_xgb_model.joblib"
+}

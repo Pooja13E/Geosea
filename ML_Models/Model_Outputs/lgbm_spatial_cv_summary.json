@@ -1,0 +1,89 @@
+{
+    "model": "LGBMClassifier",
+    "features": [
+        "temperature",
+        "salinity",
+        "chlorophyll",
+        "nitrate",
+        "phosphate",
+        "pH",
+        "PAR",
+        "kdpar"
+    ],
+    "target": "presence",
+    "fold_column": "spatial_fold",
+    "number_of_folds": 5,
+    "prediction_threshold": 0.5,
+    "roc_auc": {
+        "mean": 0.9369132289440069,
+        "std": 0.010370548341203916
+    },
+    "accuracy": {
+        "mean": 0.8313667184339687,
+        "std": 0.01984135385637094
+    },
+    "precision": {
+        "mean": 0.9488910342450202,
+        "std": 0.01765590615733468
+    },
+    "recall": {
+        "mean": 0.6864690649922118,
+        "std": 0.05861891635738161
+    },
+    "f1": {
+        "mean": 0.7953566363932689,
+        "std": 0.043389660582353815
+    },
+    "fold_results": [
+        {
+            "fold": 0,
+            "train_samples": 259808,
+            "validation_samples": 77116,
+            "roc_auc": 0.9446559929262462,
+            "accuracy": 0.8552440479277971,
+            "precision": 0.966492705491638,
+            "recall": 0.7646327445046567,
+            "f1": 0.8537936634752655
+        },
+        {
+            "fold": 1,
+            "train_samples": 275738,
+            "validation_samples": 61186,
+            "roc_auc": 0.9337612259188213,
+            "accuracy": 0.8312849344621318,
+            "precision": 0.9220149067080186,
+            "recall": 0.6777467274599206,
+            "f1": 0.7812321190158307
+        },
+        {
+            "fold": 2,
+            "train_samples": 272387,
+            "validation_samples": 64537,
+            "roc_auc": 0.9199363438137169,
+            "accuracy": 0.7952027519097572,
+            "precision": 0.9457406999779882,
+            "recall": 0.5842200088384267,
+            "f1": 0.7222677509508499
+        },
+        {
+            "fold": 3,
+            "train_samples": 273104,
+            "validation_samples": 63820,
+            "roc_auc": 0.9359322690559472,
+            "accuracy": 0.8401911626449389,
+            "precision": 0.9402811872349922,
+            "recall": 0.7039227479283614,
+            "f1": 0.8051134083656584
+        },
+        {
+            "fold": 4,
+            "train_samples": 266659,
+            "validation_samples": 70265,
+            "roc_auc": 0.9502803130053028,
+            "accuracy": 0.8349106952252188,
+            "precision": 0.9699256718124643,
+            "recall": 0.7018230962296935,
+            "f1": 0.8143762401587403
+        }
+    ]
+}

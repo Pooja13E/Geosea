@@ -1,0 +1,83 @@
+.gs-app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.gs-app__body {
+  flex: 1;
+  display: flex;
+  min-height: 0;
+}
+
+@media (max-width: 720px) {
+  .gs-app__body {
+    flex-direction: column;
+  }
+}
+
+.gs-app--center {
+  align-items: center;
+  justify-content: center;
+  background: var(--gs-foam-050);
+}
+
+.gs-status-card {
+  max-width: 380px;
+  text-align: center;
+  background: var(--gs-white);
+  border: 1px solid var(--gs-line-200);
+  border-radius: var(--gs-radius-lg);
+  box-shadow: var(--gs-shadow-panel);
+  padding: 32px 28px;
+}
+
+.gs-status-card h2 {
+  font-size: 18px;
+  color: var(--gs-abyss-900);
+  margin-bottom: 8px;
+}
+
+.gs-status-card p {
+  font-size: 13.5px;
+  color: var(--gs-ink-600);
+  line-height: 1.5;
+}
+
+.gs-status-card__hint {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--gs-ink-400);
+}
+
+.gs-status-card__hint code {
+  background: var(--gs-foam-100);
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.gs-status-card--error h2 {
+  color: var(--gs-coral-500);
+}
+
+.gs-status-card__spinner {
+  width: 32px;
+  height: 32px;
+  margin: 0 auto 16px;
+  border-radius: 50%;
+  border: 3px solid var(--gs-teal-100);
+  border-top-color: var(--gs-teal-600);
+  animation: gs-spin 0.8s linear infinite;
+}
+
+@keyframes gs-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .gs-status-card__spinner {
+    animation: none;
+  }
+}

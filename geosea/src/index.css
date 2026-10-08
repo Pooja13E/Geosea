@@ -1,0 +1,94 @@
+/* ==========================================================
+   GeoSea Design Tokens
+   A restrained ocean/scientific palette — deep abyss navy,
+   kelp teal, and a single warm sand accent reserved for
+   suitability/attention states.
+   ========================================================== */
+
+:root {
+  /* Color */
+  --gs-abyss-900: #0a1e29;
+  --gs-abyss-800: #102b3a;
+  --gs-abyss-700: #163a4d;
+  --gs-teal-600: #1c6e63;
+  --gs-teal-500: #278f80;
+  --gs-teal-100: #d7ebe5;
+  --gs-sea-500: #2f8fa3;
+  --gs-sand-500: #e0a85c;
+  --gs-coral-500: #c96a4e;
+  --gs-foam-050: #f6f8f7;
+  --gs-foam-100: #eef2f1;
+  --gs-line-200: #dde5e3;
+  --gs-ink-900: #10262e;
+  --gs-ink-600: #4c6169;
+  --gs-ink-400: #7c8e93;
+  --gs-white: #ffffff;
+
+  /* Type */
+  --gs-font-display: "Fraunces", "Iowan Old Style", serif;
+  --gs-font-body: "Space Grotesk", "Inter", -apple-system, sans-serif;
+
+  /* Layout */
+  --gs-header-h: 64px;
+  --gs-sidebar-w: 296px;
+  --gs-radius-sm: 6px;
+  --gs-radius-md: 10px;
+  --gs-radius-lg: 16px;
+  --gs-shadow-panel: 0 8px 28px -12px rgba(10, 30, 41, 0.28);
+  --gs-shadow-card: 0 2px 10px -4px rgba(10, 30, 41, 0.14);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--gs-font-body);
+  color: var(--gs-ink-900);
+  background: var(--gs-foam-050);
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-family: var(--gs-font-display);
+  margin: 0;
+  font-weight: 500;
+}
+
+p {
+  margin: 0;
+}
+
+button {
+  font-family: inherit;
+}
+
+::selection {
+  background: var(--gs-teal-100);
+}
+
+/* Visible keyboard focus, everywhere */
+:focus-visible {
+  outline: 2px solid var(--gs-sea-500);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}

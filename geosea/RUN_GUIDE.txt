@@ -1,0 +1,55 @@
+GeoSea — Quick Run Guide
+========================
+
+1. BACKEND
+-----------
+Open PowerShell in the project root:
+
+cd backend
+python -m venv venv
+venv\Scripts\activate
+pip install -r requirements.txt
+uvicorn app:app --reload
+
+IMPORTANT: use `app:app`, NOT `main:app`.
+
+Test:
+http://127.0.0.1:8000/health
+
+Expected when the Random Forest artifact loads:
+"status": "ok"
+"model": "random_forest"
+"ready": true
+
+2. FRONTEND
+-----------
+Open a SECOND PowerShell at the project root (the folder containing package.json):
+
+npm install
+npm run dev
+
+Open the Vite URL, normally:
+http://localhost:5173
+
+3. PREDICTION
+-------------
+Select Habitat Suitability Prediction and click a marine coordinate.
+The browser sends only latitude/longitude to FastAPI.
+FastAPI retrieves the 8 Bio-ORACLE baseline environmental variables and runs
+backend/models/geosea_rf_model.joblib.
+
+The displayed percentage is a Random Forest positive-class/model suitability
+score, not a calibrated ecological probability.
+
+4. DASHBOARD MODES
+------------------
+- Observed Occurrence Distribution
+- Environmental Conditions (8 variables)
+- Habitat Suitability Prediction
+- Occurrence Density
+
+Species Explorer is available through the Species search/profile in the sidebar.
+
+Removed from this version:
+- Suitability Heatmap
+- Compare Two Locations

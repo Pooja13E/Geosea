@@ -1,0 +1,59 @@
+{
+    "model": "TabularMLP",
+    "input_features": [
+        "temperature",
+        "salinity",
+        "chlorophyll",
+        "nitrate",
+        "phosphate",
+        "pH",
+        "PAR",
+        "kdpar"
+    ],
+    "target": "presence",
+    "dataset": "GeoSea_8_Variables.csv",
+    "dataset_rows": 336924,
+    "spatial_cv": {
+        "folds": [
+            0,
+            1,
+            2,
+            3,
+            4
+        ],
+        "scaling": "fit on training fold only",
+        "metric_threshold": 0.5
+    },
+    "training": {
+        "epochs_cv": 20,
+        "epochs_final": 20,
+        "batch_size": 1024,
+        "learning_rate": 0.003,
+        "seed": 42
+    },
+    "cv_results": {
+        "auc": {
+            "mean": 0.9074186152110814,
+            "std": 0.03669816051617887
+        },
+        "accuracy": {
+            "mean": 0.8298709575954242,
+            "std": 0.04667150207242176
+        },
+        "precision": {
+            "mean": 0.9210442642098403,
+            "std": 0.03750384806888048
+        },
+        "recall": {
+            "mean": 0.706359382426044,
+            "std": 0.12093785197397133
+        },
+        "f1": {
+            "mean": 0.7942875758820253,
+            "std": 0.08531945201106343
+        }
+    },
+    "production_scaler": "fitted on complete dataset after CV evaluation",
+    "model_path": "models\\geosea_mlp_model.pth",
+    "scaler_path": "models\\geosea_mlp_scaler.joblib"
+}

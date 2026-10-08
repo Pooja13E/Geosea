@@ -1,0 +1,40 @@
+{
+    "model_type": "RandomForestClassifier",
+    "features": [
+        "temperature",
+        "salinity",
+        "chlorophyll",
+        "nitrate",
+        "phosphate",
+        "pH",
+        "PAR",
+        "kdpar"
+    ],
+    "target": "presence",
+    "spatial_fold_column": "spatial_fold",
+    "number_of_spatial_folds": 5,
+    "prediction_threshold": 0.5,
+    "hyperparameters": {
+        "n_estimators": 200,
+        "max_depth": 14,
+        "min_samples_leaf": 10,
+        "n_jobs": -1,
+        "random_state": 42
+    },
+    "training_samples": 336924,
+    "presence_samples": 165425,
+    "pseudo_absence_samples": 171499,
+    "cross_validation": {
+        "roc_auc_mean": 0.9431388039350432,
+        "roc_auc_std": 0.009510656709576983,
+        "accuracy_mean": 0.8193257462881256,
+        "accuracy_std": 0.04331789501226735,
+        "precision_mean": 0.9605677131444276,
+        "precision_std": 0.014533964947387196,
+        "recall_mean": 0.6478750153963712,
+        "recall_std": 0.10851451236943974,
+        "f1_mean": 0.768974637767479,
+        "f1_std": 0.08684284598599884
+    },
+    "artifact": "models\\geosea_rf_model.joblib"
+}

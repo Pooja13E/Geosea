@@ -1,0 +1,78 @@
+.gs-legend {
+  position: absolute;
+  left: 14px;
+  bottom: 14px;
+  z-index: 500;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(4px);
+  border-radius: var(--gs-radius-md);
+  padding: 12px 14px;
+  box-shadow: var(--gs-shadow-panel);
+  font-size: 12.5px;
+  width: 200px;
+}
+
+.gs-legend__title {
+  font-family: var(--gs-font-display);
+  font-size: 13px;
+  color: var(--gs-abyss-900);
+  margin-bottom: 8px;
+}
+
+.gs-legend__row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 3px 0;
+  color: var(--gs-ink-600);
+}
+
+.gs-legend__dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.gs-legend__dot--presence {
+  background: var(--gs-teal-500);
+}
+
+.gs-legend__dot--absence {
+  background: var(--gs-ink-400);
+}
+
+.gs-legend__swatch {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.gs-legend__divider {
+  height: 1px;
+  background: var(--gs-line-200);
+  margin: 8px 0;
+}
+
+.gs-legend__note {
+  font-size: 11px;
+  color: var(--gs-ink-400);
+  line-height: 1.4;
+}
+
+.gs-legend__gradient {
+  height: 12px;
+  border-radius: 999px;
+  margin-top: 4px;
+  border: 1px solid rgba(16, 38, 46, 0.12);
+}
+
+.gs-legend__gradient-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--gs-ink-600);
+  margin-top: 4px;
+  font-family: var(--gs-font-display);
+}

@@ -1,0 +1,48 @@
+{
+    "seed": 42,
+    "features": [
+        "temperature",
+        "salinity",
+        "chlorophyll",
+        "nitrate",
+        "phosphate",
+        "pH",
+        "PAR",
+        "kdpar"
+    ],
+    "target": "presence",
+    "fold_column": "spatial_fold",
+    "folds": [
+        0,
+        1,
+        2,
+        3,
+        4
+    ],
+    "epochs": 20,
+    "batch_size": 1024,
+    "learning_rate": 0.003,
+    "threshold": 0.5,
+    "metrics": {
+        "auc": {
+            "mean": 0.9074186152110814,
+            "std": 0.03669816051617887
+        },
+        "accuracy": {
+            "mean": 0.8298709575954242,
+            "std": 0.04667150207242176
+        },
+        "precision": {
+            "mean": 0.9210442642098403,
+            "std": 0.03750384806888048
+        },
+        "recall": {
+            "mean": 0.706359382426044,
+            "std": 0.12093785197397133
+        },
+        "f1": {
+            "mean": 0.7942875758820253,
+            "std": 0.08531945201106343
+        }
+    }
+}

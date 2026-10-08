@@ -1,0 +1,241 @@
+.gs-map {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.gs-map__container {
+  height: 100%;
+  width: 100%;
+  background: var(--gs-foam-100);
+}
+
+.leaflet-control-zoom {
+  border: none !important;
+  box-shadow: var(--gs-shadow-card) !important;
+  overflow: hidden;
+  border-radius: var(--gs-radius-sm) !important;
+}
+
+.leaflet-control-zoom a {
+  color: var(--gs-abyss-900) !important;
+}
+
+.leaflet-control-attribution {
+  font-size: 10px !important;
+  background: rgba(255, 255, 255, 0.75) !important;
+}
+
+.gs-map__mode-badge {
+  position: absolute;
+  top: 14px;
+  left: 14px;
+  z-index: 500;
+  background: rgba(255, 255, 255, 0.96);
+  backdrop-filter: blur(4px);
+  border-radius: var(--gs-radius-md);
+  padding: 8px 14px;
+  box-shadow: var(--gs-shadow-panel);
+  max-width: 260px;
+}
+
+.gs-map__mode-title {
+  font-family: var(--gs-font-display);
+  font-size: 14px;
+  color: var(--gs-abyss-900);
+}
+
+.gs-map__mode-subtitle {
+  font-size: 11px;
+  color: var(--gs-ink-400);
+  margin-top: 1px;
+}
+
+.gs-map__mode-subtitle--predict {
+  color: var(--gs-sand-500);
+  font-weight: 600;
+  margin-top: 4px;
+}
+
+
+.gs-map__pan-controls {
+  position: absolute;
+  left: 12px;
+  bottom: 48px;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  padding: 4px;
+  background: rgba(255, 255, 255, 0.94);
+  border-radius: var(--gs-radius-sm);
+  box-shadow: var(--gs-shadow-card);
+}
+
+.gs-map__pan-row {
+  display: flex;
+  gap: 2px;
+}
+
+.gs-map__pan-controls button {
+  width: 30px;
+  height: 28px;
+  border: 0;
+  border-radius: 4px;
+  background: #fff;
+  color: var(--gs-abyss-900);
+  font-size: 17px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.gs-map__pan-controls button:hover {
+  background: var(--gs-foam-100);
+}
+
+.gs-map__pan-controls button:active {
+  transform: translateY(1px);
+}
+
+
+/* Keep the map itself fully interactive: drag with the mouse, wheel to zoom,
+   while the floating panels/controls remain above it. */
+.gs-map__container {
+  cursor: grab;
+}
+.gs-map__container:active {
+  cursor: grabbing;
+}
+.gs-map__container .leaflet-pane,
+.gs-map__container .leaflet-tile-pane,
+.gs-map__container .leaflet-overlay-pane,
+.gs-map__container .leaflet-marker-pane {
+  pointer-events: auto;
+}
+
+
+/* Occurrence density */
+.gs-density-legend {
+  position: absolute;
+  left: 58px;
+  bottom: 16px;
+  z-index: 450;
+  background: rgba(255, 255, 255, 0.96);
+  border: 1px solid var(--gs-line-200);
+  border-radius: var(--gs-radius-md);
+  box-shadow: var(--gs-shadow-panel);
+  padding: 10px 12px;
+  font-size: 10.5px;
+  color: var(--gs-ink-600);
+}
+
+.gs-density-legend p {
+  font-family: var(--gs-font-display);
+  font-size: 13px;
+  color: var(--gs-abyss-900);
+  margin-bottom: 6px;
+}
+
+.gs-density-legend span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 2px 0;
+}
+
+.gs-density-legend__dot {
+  width: 11px;
+  height: 11px;
+  display: inline-block;
+  border-radius: 50%;
+}
+
+.gs-density-legend__dot--low { background: var(--gs-teal-500); }
+.gs-density-legend__dot--mid { background: var(--gs-sand-500); }
+.gs-density-legend__dot--high { background: var(--gs-coral-500); }
+
+.gs-density-panel {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  z-index: 500;
+  width: 280px;
+  background: var(--gs-white);
+  border-radius: var(--gs-radius-lg);
+  box-shadow: var(--gs-shadow-panel);
+  padding: 18px;
+}
+
+.gs-density-panel__header {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.gs-density-panel__header h3 {
+  font-size: 15px;
+  color: var(--gs-abyss-900);
+}
+
+.gs-density-panel__hero {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  margin-top: 14px;
+  padding: 10px;
+  border-radius: var(--gs-radius-md);
+  background: var(--gs-teal-100);
+}
+
+.gs-density-panel__hero strong {
+  font-family: var(--gs-font-display);
+  font-size: 25px;
+  color: var(--gs-abyss-900);
+}
+
+.gs-density-panel__hero span {
+  font-size: 10.5px;
+  color: var(--gs-teal-600);
+}
+
+.gs-density-panel__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 7px;
+  margin-top: 10px;
+}
+
+.gs-density-panel__grid div {
+  background: var(--gs-foam-100);
+  border-radius: var(--gs-radius-sm);
+  padding: 8px;
+}
+
+.gs-density-panel__grid div:last-child {
+  grid-column: 1 / -1;
+}
+
+.gs-density-panel__grid span,
+.gs-density-panel__grid strong {
+  display: block;
+}
+
+.gs-density-panel__grid span {
+  font-size: 10px;
+  color: var(--gs-ink-400);
+}
+
+.gs-density-panel__grid strong {
+  font-family: var(--gs-font-display);
+  font-size: 16px;
+  color: var(--gs-abyss-900);
+  margin-top: 2px;
+}
+
+.gs-density-panel__note {
+  margin-top: 12px;
+  font-size: 10.5px;
+  line-height: 1.5;
+  color: var(--gs-ink-400);
+}

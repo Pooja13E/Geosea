@@ -1,0 +1,47 @@
+{
+    "model_type": "LGBMClassifier",
+    "features": [
+        "temperature",
+        "salinity",
+        "chlorophyll",
+        "nitrate",
+        "phosphate",
+        "pH",
+        "PAR",
+        "kdpar"
+    ],
+    "target": "presence",
+    "spatial_fold_column": "spatial_fold",
+    "number_of_spatial_folds": 5,
+    "prediction_threshold": 0.5,
+    "hyperparameters": {
+        "n_estimators": 500,
+        "learning_rate": 0.05,
+        "num_leaves": 31,
+        "max_depth": 6,
+        "min_child_samples": 20,
+        "subsample": 0.8,
+        "colsample_bytree": 0.8,
+        "reg_alpha": 0.1,
+        "reg_lambda": 1.0,
+        "random_state": 42,
+        "n_jobs": -1,
+        "verbosity": -1
+    },
+    "training_samples": 336924,
+    "presence_samples": 165425,
+    "pseudo_absence_samples": 171499,
+    "cross_validation": {
+        "roc_auc_mean": 0.9369132289440069,
+        "roc_auc_std": 0.010370548341203916,
+        "accuracy_mean": 0.8313667184339687,
+        "accuracy_std": 0.01984135385637094,
+        "precision_mean": 0.9488910342450202,
+        "precision_std": 0.01765590615733468,
+        "recall_mean": 0.6864690649922118,
+        "recall_std": 0.05861891635738161,
+        "f1_mean": 0.7953566363932689,
+        "f1_std": 0.043389660582353815
+    },
+    "artifact": "models\\geosea_lgbm_model.joblib"
+}
