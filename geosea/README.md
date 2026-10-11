@@ -12,12 +12,14 @@ and live habitat-suitability prediction.
 - **Environmental Conditions** — observed spatially aggregated layers for temperature, salinity, chlorophyll, nitrate, phosphate, pH, PAR, and kdPAR.
 - **Occurrence Density** — spatial concentration of loaded occurrence records, with local record/presence/pseudo-absence/species details.
 - **Habitat Suitability Prediction** — live coordinate prediction through FastAPI → Bio-ORACLE v3.0 → saved Random Forest.
+- **Environmental Map Overlays** — integrated visual layers for NASA GIBS True-Colour satellite imagery, NASA Ocean Chlorophyll-a, NASA Sea Surface Temperature (SST), and official GEBCO WMS bathymetry with opacity and date sliders.
+- **Seaweed Identification & Distribution System** — upload marine macroalgae imagery for automated species identification across 53 seaweed taxa (Brown, Green, and Red seaweeds) using an EfficientNet-B0 classifier, integrated with live WoRMS taxonomic validation and GBIF global occurrence mapping.
 - **Dataset summary banner** — total occurrences, presence, pseudo-absence, species, and environmental-variable count.
 - **Base map / satellite** map styles and explicit pan controls.
 
 The dashboard does **not** use a fabricated suitability heatmap or a simulated comparison tool.
 The ML prediction is a point-based live inference workflow using real Bio-ORACLE environmental
-lookups and the saved production model.
+lookups and the saved production model. Seaweed weights (~48 MB) are automatically downloaded on first inference into a local git-ignored cache.
 
 ## Production model
 
@@ -139,6 +141,8 @@ geosea/
 ├── public/data/GeoSea_8_Variables.csv
 ├── backend/
 │   ├── app.py
+│   ├── analysis.py
+│   ├── seaweed_service.py
 │   ├── bio_oracle.py
 │   ├── requirements.txt
 │   └── models/
@@ -146,6 +150,11 @@ geosea/
 │       └── geosea_rf_metadata.json
 ├── src/
 │   ├── components/
+│   │   ├── analysis/
+│   │   ├── layout/
+│   │   ├── map/
+│   │   └── sidebar/
+│   ├── overlays/
 │   ├── data/
 │   ├── services/
 │   ├── types/

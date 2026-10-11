@@ -10,8 +10,10 @@ from pydantic import BaseModel, Field
 
 try:
     from .bio_oracle import BioOracleError, get_environment
+    from .analysis import router as analysis_router
 except ImportError:
     from bio_oracle import BioOracleError, get_environment
+    from analysis import router as analysis_router
 
 BASE_DIR = Path(__file__).resolve().parent
 MODEL_PATH = BASE_DIR / "models" / "geosea_rf_model.joblib"
@@ -52,6 +54,8 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+app.include_router(analysis_router)
 
 _model = None
 

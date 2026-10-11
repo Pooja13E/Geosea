@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { MapContainer, TileLayer, CircleMarker, Rectangle, Tooltip, useMap, useMapEvents } from "react-leaflet";
+import { MapContainer, TileLayer, WMSTileLayer, CircleMarker, Rectangle, Tooltip, useMap, useMapEvents, Pane, ImageOverlay } from "react-leaflet";
 import type {
   BaseMapStyle,
   EnvGridCell,
@@ -23,6 +23,8 @@ import {
 import { getPrediction } from "@/services/predictionService";
 import { FINAL_MODEL } from "@/services/modelConfig";
 import { formatCoordinate } from "@/utils/formatters";
+import { useOverlays } from "@/overlays/useOverlays";
+import { OverlayControls } from "@/overlays/OverlayControls";
 import "./MapView.css";
 
 const TILE_LAYERS: Record<BaseMapStyle, { url: string; attribution: string }> = {
@@ -250,7 +252,7 @@ export function MapView({
 }: MapViewProps) {
   const [viewport, setViewport] = useState<{ bounds: MapBounds; zoom: number } | null>(null);
   const [selectedRecord, setSelectedRecord] = useState<OccurrenceRecord | null>(null);
-  const [fitToCell, setFitToCell] = useState<{ bounds: MapBounds; signal: number } | null>(null);
+  const [fitToCell] = useState<{ bounds: MapBounds; signal: number } | null>(null);
 
   const [predictedLocation, setPredictedLocation] = useState<MapLocation | null>(null);
   const [predictionStatus, setPredictionStatus] = useState<"loading" | "loaded">("loaded");
@@ -258,6 +260,8 @@ export function MapView({
   const predictionRequestRef = useRef(0);
   const predictionAbortRef = useRef<AbortController | null>(null);
   const [selectedDensityCell, setSelectedDensityCell] = useState<GridCell | null>(null);
+
+  const overlayTools = useOverlays();
 
   function handlePredictClick(lat: number, lng: number) {
     const location: MapLocation = { latitude: lat, longitude: lng };
@@ -420,6 +424,49 @@ export function MapView({
         keyboard={true}
       >
         <TileLayer url={tiles.url} attribution={tiles.attribution} />
+        <Pane name="gs-overlays" style={{ zIndex: 250 }} />
+        {overlayTools.activeOverlays.map(overlay => {
+          if (!overlay.url) return null;
+          if (overlay.type === 'tile') {
+            return (
+              <TileLayer 
+                key={overlay.id} 
+                url={overlay.url} 
+                attribution={overlay.attribution} 
+                opacity={overlayTools.overlayStates[overlay.id]?.opacity} 
+                pane="gs-overlays"
+                maxNativeZoom={overlay.maxNativeZoom}
+                errorTileUrl="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
+              />
+            );
+          }
+          if (overlay.type === 'wms') {
+            return (
+              <WMSTileLayer
+                key={overlay.id}
+                url={overlay.url}
+                layers="GEBCO_LATEST"
+                format="image/png"
+                transparent={true}
+                attribution={overlay.attribution}
+                opacity={overlayTools.overlayStates[overlay.id]?.opacity}
+                pane="gs-overlays"
+              />
+            );
+          }
+          if (overlay.type === 'image' && overlay.bounds) {
+            return (
+              <ImageOverlay
+                key={overlay.id}
+                url={overlay.url}
+                bounds={overlay.bounds}
+                opacity={overlayTools.overlayStates[overlay.id]?.opacity}
+                pane="gs-overlays"
+              />
+            );
+          }
+          return null;
+        })}
         <MapPanControls />
         <FitBoundsController bounds={dataBounds} signal={fitSignal} />
         {fitToCell && <FitBoundsController bounds={fitToCell.bounds} signal={fitToCell.signal} />}
@@ -665,6 +712,21 @@ export function MapView({
             setPrediction(null);
           }}
         />
+      )}
+
+      {overlayTools.isEnabledGlobal && (
+        <div style={{ position: 'absolute', top: '120px', left: '14px', zIndex: 500, width: '260px' }}>
+          <OverlayControls
+            masterSwitch={overlayTools.masterSwitch}
+            toggleMasterSwitch={overlayTools.toggleMasterSwitch}
+            overlayStates={overlayTools.overlayStates}
+            toggleOverlay={overlayTools.toggleOverlay}
+            setOpacity={overlayTools.setOpacity}
+            setDate={overlayTools.setDate}
+            setUrl={overlayTools.setUrl}
+            setBounds={overlayTools.setBounds}
+          />
+        </div>
       )}
     </div>
   );

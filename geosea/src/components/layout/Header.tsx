@@ -6,7 +6,12 @@ import "./Header.css";
  * Performance and Reports were removed from navigation. This component
  * intentionally takes no props; see App.tsx.
  */
-export function Header() {
+export interface HeaderProps {
+  activeView?: "dashboard" | "analysis";
+  onViewChange?: (view: "dashboard" | "analysis") => void;
+}
+
+export function Header({ activeView = "dashboard", onViewChange }: HeaderProps) {
   return (
     <header className="gs-header">
       <div className="gs-header__brand">
@@ -42,7 +47,20 @@ export function Header() {
         Marine Macroalgae Habitat Suitability &amp; Environmental Analysis
       </p>
       <nav className="gs-header__nav" aria-label="Primary">
-        <span className="gs-header__nav-item gs-header__nav-item--active">Map</span>
+        <span 
+          className={`gs-header__nav-item ${activeView === 'dashboard' ? 'gs-header__nav-item--active' : ''}`}
+          onClick={() => onViewChange?.('dashboard')}
+          style={{cursor: 'pointer'}}
+        >
+          Map
+        </span>
+        <span 
+          className={`gs-header__nav-item ${activeView === 'analysis' ? 'gs-header__nav-item--active' : ''}`}
+          onClick={() => onViewChange?.('analysis')}
+          style={{cursor: 'pointer'}}
+        >
+          Seaweed Identification
+        </span>
       </nav>
     </header>
   );

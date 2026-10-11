@@ -19,6 +19,7 @@ import type {
   InteractionMode,
   MapMode,
 } from "@/types/environmental";
+import { ImageAnalysis } from "@/components/analysis/ImageAnalysis";
 import "./App.css";
 
 type LoadStatus = "loading" | "ready" | "error";
@@ -30,11 +31,12 @@ const INDIA_STUDY_BOUNDS = {
   east: 98,
 };
 
-
 function App() {
   const [status, setStatus] = useState<LoadStatus>("loading");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [fullSummary, setFullSummary] = useState<DatasetSummary | null>(null);
+
+  const [activeView, setActiveView] = useState<"dashboard" | "analysis">("dashboard");
 
   const [filters, setFilters] = useState<FilterState>(DEFAULT_FILTERS);
   const [mapMode, setMapMode] = useState<MapMode>("occurrences");
@@ -65,10 +67,6 @@ function App() {
     return getFilteredRecords(filters);
   }, [status, filters]);
 
-
-  // Reset any active environmental range filter whenever the map mode
-  // changes — a range that made sense for the previous variable (or for no
-  // variable at all, in Occurrence mode) is not valid for the new one.
   useEffect(() => {
     setFilters((prev) => (prev.envRange ? { ...prev, envRange: null } : prev));
   }, [mapMode]);
@@ -80,18 +78,11 @@ function App() {
 
   const envStatsGlobal: EnvironmentalStats | null = useMemo(() => {
     if (status !== "ready" || !isEnvironmentalMode(mapMode)) return null;
-    // Whole-dataset stats never change once loaded, so recompute only when
-    // the selected variable changes, not on every filter tweak.
     return getEnvironmentalStats(getAllIndices(), mapMode);
   }, [status, mapMode]);
 
-  // GeoSea is an India-coast decision-support dashboard. The underlying
-  // marine dataset spans a much larger oceanic region, so the map should
-  // open on the intended Indian coastal study area instead of fitting to
-  // the full dataset extent.
   const dataBounds = INDIA_STUDY_BOUNDS;
 
-  // Re-fit the map whenever the active filters change the data extent.
   useEffect(() => {
     setFitSignal((n) => n + 1);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -137,36 +128,44 @@ function App() {
 
   return (
     <div className="gs-app">
-      <Header />
-      <StatsBanner summary={fullSummary} />
-      <div className="gs-app__body">
-        <Sidebar
-          summary={fullSummary}
-          filters={filters}
-          onFilterChange={handleFilterChange}
-          mapMode={mapMode}
-          onChangeMapMode={setMapMode}
-          envStatsGlobal={envStatsGlobal}
-          baseMapStyle={baseMapStyle}
-          onChangeBaseMapStyle={setBaseMapStyle}
-          onResetMap={() => setFitSignal((n) => n + 1)}
-          interactionMode={interactionMode}
-          onChangeInteractionMode={setInteractionMode}
-        />
-        <MapView
-          filteredIndices={filteredIndices}
-          mapMode={mapMode}
-          envDomain={
-            envStatsFiltered && envStatsFiltered.count > 0
-              ? [envStatsFiltered.min, envStatsFiltered.max]
-              : null
-          }
-          dataBounds={dataBounds}
-          baseMapStyle={baseMapStyle}
-          fitSignal={fitSignal}
-          interactionMode={interactionMode}
-        />
-      </div>
+      <Header activeView={activeView} onViewChange={setActiveView} />
+      {activeView === "dashboard" ? (
+        <>
+          <StatsBanner summary={fullSummary} />
+          <div className="gs-app__body">
+            <Sidebar
+              summary={fullSummary}
+              filters={filters}
+              onFilterChange={handleFilterChange}
+              mapMode={mapMode}
+              onChangeMapMode={setMapMode}
+              envStatsGlobal={envStatsGlobal}
+              baseMapStyle={baseMapStyle}
+              onChangeBaseMapStyle={setBaseMapStyle}
+              onResetMap={() => setFitSignal((n) => n + 1)}
+              interactionMode={interactionMode}
+              onChangeInteractionMode={setInteractionMode}
+            />
+            <MapView
+              filteredIndices={filteredIndices}
+              mapMode={mapMode}
+              envDomain={
+                envStatsFiltered && envStatsFiltered.count > 0
+                  ? [envStatsFiltered.min, envStatsFiltered.max]
+                  : null
+              }
+              dataBounds={dataBounds}
+              baseMapStyle={baseMapStyle}
+              fitSignal={fitSignal}
+              interactionMode={interactionMode}
+            />
+          </div>
+        </>
+      ) : (
+        <div className="gs-app__body" style={{justifyContent: 'center', backgroundColor: '#f4f6f8', overflowY: 'auto'}}>
+          <ImageAnalysis />
+        </div>
+      )}
     </div>
   );
 }

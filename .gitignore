@@ -1,0 +1,24 @@
+# Baseline & Environment
+.overlay_baseline/
+geosea/backend/venv/
+venv/
+node_modules/
+dist/
+
+# Large Model Weights & Caches
+*.pt
+*.keras
+geosea/backend/yolov8n.pt
+geosea/backend/seaweed_model/
+geosea/backend/uploads/
+
+# Python artifacts
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+
+# Vite / Build outputs
+*.tsbuildinfo
+vite.config.d.ts
+vite.config.js
