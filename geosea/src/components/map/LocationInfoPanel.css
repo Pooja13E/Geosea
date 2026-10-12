@@ -3,13 +3,14 @@
   top: 16px;
   right: 16px;
   z-index: 500;
-  width: 280px;
+  width: 300px;
+  max-width: calc(100% - 32px);
   max-height: calc(100% - 32px);
   overflow-y: auto;
   background: var(--gs-white);
   border-radius: var(--gs-radius-lg);
   box-shadow: var(--gs-shadow-panel);
-  padding: 18px;
+  padding: 16px;
   animation: gs-panel-in 0.18s ease-out;
 }
 
@@ -92,6 +93,13 @@
 }
 
 .gs-info-panel__coords {
+  display: inline-flex;
+  align-items: center;
+  background: #eef7f5;
+  border: 1px solid #d4e9e4;
+  border-radius: 8px;
+  padding: 7px 10px;
+  margin-top: 10px;
   font-size: 11.5px;
   color: var(--gs-ink-400);
   margin-top: 8px;
@@ -257,3 +265,249 @@
 
 .gs-env-profile__row--warn .gs-env-profile__track span { background: var(--gs-coral-500); }
 .gs-env-profile__row--warn .gs-env-profile__top strong { color: var(--gs-coral-500); }
+
+/* Optional Sentinel-2 evidence card */
+.gs-satellite-card {
+  border: 1px solid var(--gs-line-200);
+  background: linear-gradient(145deg, #f5fbfa, #ffffff 72%);
+  border-radius: var(--gs-radius-md);
+  padding: 12px;
+}
+
+.gs-satellite-card__heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.gs-satellite-card__heading .gs-info-panel__section-label {
+  margin-bottom: 3px;
+}
+
+.gs-satellite-card__heading h4 {
+  color: var(--gs-abyss-900);
+  font-size: 14px;
+}
+
+.gs-satellite-card__icon {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 9px;
+  color: var(--gs-teal-600);
+  background: var(--gs-teal-100);
+  font-size: 22px;
+}
+
+.gs-satellite-card__intro,
+.gs-satellite-card__caption,
+.gs-satellite-card__note {
+  color: var(--gs-ink-600);
+  font-size: 10.5px;
+  line-height: 1.5;
+  margin-top: 8px;
+}
+
+.gs-satellite-card__source-buttons {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2px;
+  margin-top: 8px;
+}
+
+.gs-satellite-card__button--secondary {
+  color: var(--gs-teal-700, #176d66);
+  background: #e4f4f0;
+  border: 1px solid #b9ded6;
+}
+
+.gs-satellite-card__button {
+  width: 100%;
+  margin-top: 10px;
+  border: 0;
+  border-radius: var(--gs-radius-sm);
+  padding: 10px 12px;
+  color: #fff;
+  background: var(--gs-teal-600);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.gs-satellite-card__button:hover {
+  filter: brightness(0.95);
+}
+
+.gs-satellite-card__image {
+  display: block;
+  width: 100%;
+  aspect-ratio: 640 / 420;
+  object-fit: cover;
+  margin-top: 10px;
+  border: 1px solid var(--gs-line-200);
+  border-radius: var(--gs-radius-sm);
+  background: var(--gs-foam-100);
+}
+
+.gs-fai-legend {
+  margin-top: 10px;
+}
+
+.gs-fai-legend__bar {
+  height: 9px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #243b8a, #24a8a1, #f4e85c, #e56b32, #a50026);
+}
+
+.gs-fai-legend__labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 4px;
+  color: var(--gs-ink-500, #637782);
+  font-size: 10px;
+}
+
+.gs-satellite-card__metadata {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 5px 10px;
+  margin-top: 10px;
+  font-size: 10.5px;
+}
+
+.gs-satellite-card__metadata span {
+  color: var(--gs-ink-400);
+}
+
+.gs-satellite-card__metadata strong {
+  color: var(--gs-abyss-900);
+  text-align: right;
+  font-weight: 600;
+}
+
+.gs-satellite-card__error {
+  margin-top: 10px;
+  border-radius: var(--gs-radius-sm);
+  background: #fff0e9;
+  padding: 10px;
+  color: #8b3d24;
+  font-size: 11px;
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.gs-satellite-card__retry {
+  margin-top: 8px;
+  border: 1px solid var(--gs-line-200);
+  border-radius: var(--gs-radius-sm);
+  background: #fff;
+  padding: 6px 9px;
+  color: var(--gs-teal-600);
+  font-size: 11px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+/* Larger, easier-to-read location dashboard on desktop and laptop screens. */
+.gs-info-panel {
+  box-sizing: border-box;
+  width: min(390px, calc(100vw - 32px));
+  padding: 22px;
+}
+
+.gs-info-panel__eyebrow { font-size: 12px; }
+.gs-info-panel__header h3 { font-size: 18px; }
+.gs-info-panel__coords {
+  display: inline-flex;
+  align-items: center;
+  background: #eef7f5;
+  border: 1px solid #d4e9e4;
+  border-radius: 8px;
+  padding: 7px 10px;
+  margin-top: 10px; font-size: 13px; }
+.gs-info-panel__section-label { font-size: 12px; margin-bottom: 12px; }
+.gs-info-panel__variable { font-size: 14px; }
+.gs-env-profile__top { font-size: 13px; }
+.gs-env-profile__track { height: 6px; }
+.gs-info-panel__footnote { font-size: 12px; }
+.gs-info-panel__loading,
+.gs-info-panel__empty { font-size: 14px; }
+.gs-info-panel__status-note,
+.gs-info-panel__warning { font-size: 13px; }
+
+.gs-satellite-card { padding: 15px; }
+.gs-satellite-card__heading h4 { font-size: 17px; }
+.gs-satellite-card__intro,
+.gs-satellite-card__caption,
+.gs-satellite-card__note { font-size: 12.5px; line-height: 1.55; }
+.gs-satellite-card__button { font-size: 13px; }
+.gs-satellite-card__image {
+  width: 100%;
+  aspect-ratio: 800 / 520;
+  object-fit: contain;
+  background: linear-gradient(135deg, #d9edf3, #eef7f5);
+}
+.gs-satellite-card__metadata { font-size: 12.5px; gap: 7px 12px; }
+.gs-satellite-card__error { font-size: 12.5px; }
+.gs-satellite-card__retry { font-size: 12.5px; }
+
+@media (max-width: 640px) {
+  .gs-info-panel {
+    top: 10px;
+    right: 10px;
+    width: min(370px, calc(100vw - 20px));
+    max-height: calc(100% - 20px);
+    padding: 17px;
+  }
+}
+
+.gs-satellite-card__subview,
+.gs-satellite-card__patches,
+.gs-satellite-card__variables {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px solid var(--gs-line-200);
+}
+
+.gs-satellite-card__subview h5,
+.gs-satellite-card__patches h5 {
+  color: var(--gs-abyss-900);
+  font-size: 11px;
+  font-weight: 700;
+  margin: 0 0 6px;
+}
+
+.gs-satellite-card__patch {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 3px 8px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--gs-line-200);
+  font-size: 10.5px;
+}
+
+.gs-satellite-card__patch strong { color: var(--gs-abyss-900); }
+.gs-satellite-card__patch span { color: var(--gs-teal-700, #176d66); font-weight: 700; }
+.gs-satellite-card__patch small { grid-column: 1 / -1; color: var(--gs-ink-600); font-variant-numeric: tabular-nums; }
+
+.gs-satellite-card__variables summary {
+  color: var(--gs-abyss-900);
+  cursor: pointer;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.gs-satellite-card__variable-list { margin-top: 8px; }
+.gs-satellite-card__variable {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px;
+  padding: 6px 0;
+  border-bottom: 1px solid rgba(190, 211, 211, 0.55);
+  font-size: 10px;
+}
+.gs-satellite-card__variable span { color: var(--gs-ink-600); }
+.gs-satellite-card__variable strong { color: var(--gs-abyss-900); text-align: right; font-variant-numeric: tabular-nums; }
+

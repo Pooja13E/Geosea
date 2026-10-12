@@ -8,7 +8,7 @@ export function StatsBanner({ summary }: { summary: DatasetSummary }) {
     ["Total occurrences", summary.recordCount],
     ["Presence", summary.presenceCount],
     ["Pseudo-absence", summary.absenceCount],
-    ["Species", summary.speciesCount],
+    ["Canonical species names", summary.speciesCount],
   ] as const;
 
   return (

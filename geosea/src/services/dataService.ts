@@ -14,10 +14,10 @@
  * through the functions exported below, which is also the seam later
  * stages (ML predictions, environmental layers) will read through.
  *
- * MOCK DATA: src/data/mockEnvironmentalData.ts is kept for local dev/testing
  * but is not imported anywhere in this file or by any component.
  */
 import Papa from "papaparse";
+import { canonicalBinomialName, normalizeTaxonLabel } from "@/utils/scientificNames";
 import {
   DEFAULT_FILTERS,
   ENV_VARIABLE_KEYS,
@@ -192,7 +192,15 @@ export function loadEnvironmentalData(): Promise<DatasetSummary> {
           return;
         }
 
-        cols.speciesIndex[i] = internSpecies(row.scientific_name ?? PSEUDO_ABSENCE_LABEL);
+        const sourceName = (row.scientific_name ?? PSEUDO_ABSENCE_LABEL).trim();
+        // Normalize author/rank suffix variants for search, filtering, map labels,
+        // and profiles. Genus-only labels stay genus-only. The source CSV remains
+        // unchanged; this is display normalization, not synonym resolution.
+        cols.speciesIndex[i] = internSpecies(
+          sourceName.toLowerCase() === PSEUDO_ABSENCE_LABEL.toLowerCase()
+            ? PSEUDO_ABSENCE_LABEL
+            : normalizeTaxonLabel(sourceName)
+        );
         cols.latitude[i] = lat;
         cols.longitude[i] = lon;
         cols.presence[i] = presence;
@@ -262,6 +270,10 @@ function computeSpeciesList(): string[] {
   }
   return Array.from(seen)
     .map((idx) => speciesTable[idx])
+    // Species Explorer lists canonical binomials only; genus/higher-rank records
+    // remain in the underlying map and overall record counts but are not mislabeled
+    // as species in the search control.
+    .filter((name) => canonicalBinomialName(name) === name)
     .sort((a, b) => a.localeCompare(b));
 }
 
@@ -289,6 +301,7 @@ export function searchSpecies(query: string, maxResults = 200): string[] {
   return results;
 }
 
+
 function computeSummary(indices: ArrayLike<number>): DatasetSummary {
   const cols = requireColumns();
 
@@ -298,7 +311,7 @@ function computeSummary(indices: ArrayLike<number>): DatasetSummary {
   let latMax = -Infinity;
   let lonMin = Infinity;
   let lonMax = -Infinity;
-  const speciesSeen = new Set<number>();
+  const speciesSeen = new Set<string>();
   const foldCounts: Record<SpatialFold, number> = { 0: 0, 1: 0, 2: 0, 3: 0, 4: 0 };
 
   const ranges: Record<string, [number, number]> = {};
@@ -310,7 +323,9 @@ function computeSummary(indices: ArrayLike<number>): DatasetSummary {
     if (pseudo) absenceCount += 1;
     else {
       presenceCount += 1;
-      speciesSeen.add(cols.speciesIndex[i]);
+      const rawSpecies = speciesTable[cols.speciesIndex[i]];
+      const canonical = canonicalBinomialName(rawSpecies);
+      if (canonical) speciesSeen.add(canonical);
     }
 
     if (cols.latitude[i] < latMin) latMin = cols.latitude[i];

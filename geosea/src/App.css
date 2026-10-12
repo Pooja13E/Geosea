@@ -81,3 +81,32 @@
     animation: none;
   }
 }
+
+.gs-selected-location-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 38px;
+  padding: 7px 22px;
+  background: #eef7f5;
+  border-bottom: 1px solid #d4e9e4;
+  color: var(--gs-abyss-900);
+  font-size: 12px;
+  flex-shrink: 0;
+}
+.gs-selected-location-banner__label { color: var(--gs-teal-600); font-weight: 600; margin-right: 4px; }
+.gs-selected-location-banner__separator { color: var(--gs-ink-400); }
+@media (max-width: 520px) { .gs-selected-location-banner { flex-wrap: wrap; padding: 7px 12px; gap: 6px; } }
+
+.gs-app__body--analysis {
+  display: flex;
+  justify-content: center;
+  background: #f4f6f8;
+  overflow: hidden;
+}
+
+@media (max-width: 850px) {
+  .gs-app__body--analysis {
+    overflow-y: auto;
+  }
+}

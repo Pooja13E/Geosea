@@ -7,6 +7,20 @@ import pandas as pd
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
+from dotenv import load_dotenv
+
+try:
+    from .remote_sensing import (
+        RemoteSensingError,
+        get_sentinel2_observation,
+        get_sentinel3_observation,
+    )
+except ImportError:
+    from remote_sensing import (
+        RemoteSensingError,
+        get_sentinel2_observation,
+        get_sentinel3_observation,
+    )
 
 try:
     from .bio_oracle import BioOracleError, get_environment
@@ -16,6 +30,7 @@ except ImportError:
     from analysis import router as analysis_router
 
 BASE_DIR = Path(__file__).resolve().parent
+load_dotenv(BASE_DIR / ".env")
 MODEL_PATH = BASE_DIR / "models" / "geosea_rf_model.joblib"
 METADATA_PATH = BASE_DIR / "models" / "geosea_rf_metadata.json"
 
@@ -100,6 +115,38 @@ def startup():
         load_artifacts()
     except Exception as exc:
         print(f"[GeoSea] Random Forest not loaded: {exc}")
+
+
+class SatelliteObservationRequest(BaseModel):
+    latitude: float = Field(..., ge=-90, le=90)
+    longitude: float = Field(..., ge=-180, le=180)
+    lookback_days: int = Field(365, ge=1, le=1825)
+
+
+def _satellite_response(fetcher, request: SatelliteObservationRequest):
+    try:
+        return fetcher(request.latitude, request.longitude, request.lookback_days)
+    except RemoteSensingError as exc:
+        # Earth Engine setup/coverage issues are returned as readable API details,
+        # not a missing-route 404 or a raw server traceback.
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except Exception as exc:
+        raise HTTPException(
+            status_code=502,
+            detail="Satellite imagery could not be retrieved for this location. Check Earth Engine access and try again.",
+        ) from exc
+
+
+@app.post("/remote-sensing/sentinel2")
+def sentinel2_observation(request: SatelliteObservationRequest):
+    """Retrieve a Sentinel-2 scene for a selected map location."""
+    return _satellite_response(get_sentinel2_observation, request)
+
+
+@app.post("/remote-sensing/sentinel3")
+def sentinel3_observation(request: SatelliteObservationRequest):
+    """Retrieve Sentinel-3 OLCI imagery when Sentinel-2 is unavailable."""
+    return _satellite_response(get_sentinel3_observation, request)
 
 
 @app.get("/health")

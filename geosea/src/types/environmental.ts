@@ -144,10 +144,9 @@ export interface SuitabilityBand {
  * a union (rather than collapsing to a bare string literal) so a future
  * view can be reintroduced without redesigning the state shape.
  */
-export type AppView = "map";
 
 /** Whether clicking the map browses observed records or runs a suitability prediction. */
-export type InteractionMode = "browse" | "predict" | "density";
+export type InteractionMode = "browse" | "predict" | "density" | "verification";
 
 export type BaseMapStyle = "standard" | "satellite";
 

@@ -1,9 +1,12 @@
+import { useEffect, useRef, useState } from "react";
 import type { HabitatPrediction, MapLocation, OccurrenceRecord } from "@/types/environmental";
 import { ENV_VARIABLE_KEYS } from "@/types/environmental";
 import { ENV_VARIABLE_META } from "@/data/envVariableConfig";
 import { suitabilityBand, UNKNOWN_SUITABILITY_COLOR } from "@/data/suitabilityConfig";
 import { formatCoordinate, formatVariable } from "@/utils/formatters";
 import { getEnvironmentalRanges } from "@/services/dataService";
+import { getSentinel2Observation, getSentinel3Observation } from "@/services/remoteSensingService";
+import type { SatelliteObservation } from "@/services/remoteSensingService";
 import "./LocationInfoPanel.css";
 
 const VARIABLE_ROWS: Array<{
@@ -115,6 +118,54 @@ function PredictedLocationPanel({
   const band = prediction ? suitabilityBand(prediction.suitabilityClass) : null;
   const trainingRanges = getEnvironmentalRanges();
   const hasWarnings = (prediction?.outOfRangeVariables.length ?? 0) > 0;
+  const [satelliteStatus, setSatelliteStatus] = useState<"idle" | "loading" | "loaded" | "error">("idle");
+  const [satelliteObservation, setSatelliteObservation] = useState<SatelliteObservation | null>(null);
+  const [satelliteSource, setSatelliteSource] = useState<"sentinel2" | "sentinel3">("sentinel2");
+  const [satelliteError, setSatelliteError] = useState<string | null>(null);
+  const [satelliteFallback, setSatelliteFallback] = useState(false);
+  const satelliteAbortRef = useRef<AbortController | null>(null);
+
+  useEffect(() => {
+    satelliteAbortRef.current?.abort();
+    const controller = new AbortController();
+    satelliteAbortRef.current = controller;
+    setSatelliteStatus("loading");
+    setSatelliteObservation(null);
+    setSatelliteError(null);
+    setSatelliteFallback(false);
+
+    async function loadSatellite() {
+      try {
+        const observation = await getSentinel2Observation(location, 365, controller.signal);
+        if (controller.signal.aborted) return;
+        setSatelliteSource("sentinel2");
+        setSatelliteObservation(observation);
+        setSatelliteStatus("loaded");
+        return;
+      } catch (sentinel2Error) {
+        if (controller.signal.aborted) return;
+        try {
+          const observation = await getSentinel3Observation(location, 365, controller.signal);
+          if (controller.signal.aborted) return;
+          setSatelliteSource("sentinel3");
+          setSatelliteFallback(true);
+          setSatelliteObservation(observation);
+          setSatelliteStatus("loaded");
+        } catch (sentinel3Error) {
+          if (controller.signal.aborted) return;
+          // Keep raw backend/proxy errors out of the UI; explain the issue clearly.
+          console.warn("Satellite imagery lookup failed", { sentinel2Error, sentinel3Error });
+          setSatelliteError("No usable Sentinel-2 or Sentinel-3 image could be retrieved for this location and date range. Check that the backend is running and Google Earth Engine is configured, or try a nearby coastal location.");
+          setSatelliteStatus("error");
+        }
+      }
+    }
+
+    void loadSatellite();
+    return () => controller.abort();
+  }, [location.latitude, location.longitude]);
+
+  useEffect(() => () => satelliteAbortRef.current?.abort(), []);
 
   return (
     <div className="gs-info-panel" role="dialog" aria-label="Habitat suitability prediction">
@@ -127,10 +178,6 @@ function PredictedLocationPanel({
           ×
         </button>
       </div>
-
-      <p className="gs-info-panel__coords">
-        {formatCoordinate(location.latitude)}, {formatCoordinate(location.longitude)}
-      </p>
 
       <div className="gs-info-panel__divider" />
 
@@ -194,6 +241,54 @@ function PredictedLocationPanel({
           ) : (
             <p className="gs-info-panel__empty">Environmental data could not be retrieved for this coordinate.</p>
           )}
+
+          <div className="gs-info-panel__divider" />
+          <section className="gs-satellite-card" aria-label="Satellite observation">
+            <div className="gs-satellite-card__heading">
+              <div>
+                <p className="gs-info-panel__section-label">Satellite observation</p>
+                <h4>{satelliteSource === "sentinel3" ? "Sentinel-3 fallback imagery" : "Sentinel-2 imagery"}</h4>
+              </div>
+              <span className="gs-satellite-card__icon" aria-hidden="true">⌁</span>
+            </div>
+            {satelliteStatus === "loading" && (
+              <p className="gs-info-panel__loading" role="status">Searching recent Sentinel-2 imagery; Sentinel-3 will be tried automatically if needed…</p>
+            )}
+            {satelliteStatus === "error" && (
+              <div className="gs-satellite-card__error" role="alert">
+                <p>{satelliteError}</p>
+                <button type="button" className="gs-satellite-card__retry" onClick={() => window.location.reload()}>Try again</button>
+              </div>
+            )}
+            {satelliteStatus === "loaded" && satelliteObservation && (
+              <div className="gs-satellite-card__result">
+                {satelliteFallback && (
+                  <p className="gs-satellite-card__fallback">Sentinel-2 was not usable here, so Sentinel-3 is being shown as the broader-area fallback.</p>
+                )}
+                <img
+                  className="gs-satellite-card__image"
+                  src={satelliteObservation.thumbnail_url}
+                  alt={`${satelliteObservation.platform} satellite image around ${formatCoordinate(location.latitude)}, ${formatCoordinate(location.longitude)} captured ${satelliteObservation.observation_date}`}
+                  loading="lazy"
+                  onError={() => { setSatelliteError("The satellite image could not be displayed. Please try selecting the location again."); setSatelliteStatus("error"); setSatelliteObservation(null); }}
+                />
+                <div className="gs-satellite-card__metadata">
+                  <span>Source</span>
+                  <strong>{satelliteSource === "sentinel2" ? "Sentinel-2" : "Sentinel-3 OLCI"}</strong>
+                  <span>Observation date</span>
+                  <strong>{satelliteObservation.observation_date}</strong>
+                  <span>Scene cloud cover</span>
+                  <strong>{satelliteObservation.scene_cloud_percentage === null ? "Not reported" : `${satelliteObservation.scene_cloud_percentage}%`}</strong>
+                  <span>{satelliteSource === "sentinel3" ? "Spatial resolution" : "Clear pixels near point"}</span>
+                  <strong>{satelliteSource === "sentinel3" ? "~300 m" : `${satelliteObservation.local_clear_percentage}%`}</strong>
+                  <span>Scenes searched</span>
+                  <strong>{satelliteObservation.scenes_considered.toLocaleString()}</strong>
+                </div>
+                <p className="gs-satellite-card__caption">{satelliteObservation.visualization} · approx. {satelliteObservation.thumbnail_radius_meters / 1000} km around selected point.</p>
+              </div>
+            )}
+          </section>
+
 
           {prediction?.environmentalSource && (
             <p className="gs-info-panel__footnote">

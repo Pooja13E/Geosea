@@ -1,0 +1,38 @@
+{
+    "version": "V2",
+    "model": "EfficientNet-B0",
+    "num_classes": 12,
+    "image_size": 224,
+    "batch_size": 16,
+    "head_epochs": 5,
+    "finetune_epochs": 25,
+    "best_epoch": 16,
+    "best_validation_accuracy": 0.8690476190476191,
+    "test_accuracy": 0.8020833333333334,
+    "test_accuracy_percent": 80.20833333333334,
+    "label_smoothing": 0.1,
+    "seed": 42,
+    "classes": [
+        "Caulerpa_racemosa",
+        "Caulerpa_serrulata",
+        "Colpomenia_sinuosa",
+        "Dictyosphaeria_cavernosa",
+        "Dictyota_dichotoma",
+        "Halimeda_macroloba",
+        "Halimeda_tuna",
+        "Hormophysa_cuneiformis",
+        "Hydroclathrus_clathratus",
+        "Lobophora_variegata",
+        "Turbinaria_ornata",
+        "Ulva_lactuca"
+    ],
+    "dataset": "C:\\Users\\epooj\\Downloads\\Model\\Dataset",
+    "preprocessing": "Aspect-ratio preserving",
+    "training_augmentation": [
+        "RandomResizedCrop",
+        "HorizontalFlip",
+        "VerticalFlip",
+        "Rotation",
+        "ColorJitter"
+    ]
+}

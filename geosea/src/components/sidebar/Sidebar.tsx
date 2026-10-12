@@ -3,11 +3,11 @@ import type {
   BaseMapStyle,
   DatasetSummary,
   EnvironmentalStats,
-  SpeciesProfile,
   FilterState,
   InteractionMode,
   MapMode,
   PresenceFilter,
+  SpeciesProfile,
 } from "@/types/environmental";
 import { ENV_VARIABLE_KEYS } from "@/types/environmental";
 import { ENV_VARIABLE_META, isEnvironmentalMode } from "@/data/envVariableConfig";
@@ -140,7 +140,7 @@ export function Sidebar({
         </div>
       </section>
 
-      <SpeciesExplorerProfile species={filters.species} />
+      {filters.species !== "all" && <SpeciesExplorerProfile species={filters.species} />}
 
       <section className="gs-sidebar__section">
         <h2 className="gs-sidebar__heading">Map Layer</h2>
@@ -266,7 +266,7 @@ export function Sidebar({
       </button>
 
       <p className="gs-sidebar__footnote">
-        {formatCount(summary.recordCount)} records loaded · {formatCount(summary.speciesCount)} species ·
+        {formatCount(summary.recordCount)} records loaded · {formatCount(summary.speciesCount)} canonical species names ·
         8 environmental variables available as map layers.
       </p>
     </aside>
@@ -279,40 +279,36 @@ function SpeciesExplorerProfile({ species }: { species: string | "all" }) {
     [species]
   );
 
+  if (!profile) return null;
+
   return (
     <section className="gs-sidebar__section gs-species-profile">
       <div className="gs-sidebar__heading-row">
         <h2 className="gs-sidebar__heading">Species Profile</h2>
-        {profile && <span className="gs-species-profile__badge">Selected</span>}
+        <span className="gs-species-profile__badge">Selected</span>
       </div>
-      {!profile ? (
-        <p className="gs-species-profile__empty">Select a species above to explore its occurrence count, geographic coverage, and environmental range.</p>
-      ) : (
-        <>
-          <h3 className="gs-species-profile__name">{profile.scientificName}</h3>
-          <div className="gs-species-profile__count">
-            <strong>{formatCount(profile.occurrenceCount)}</strong>
-            <span>observed occurrences</span>
-          </div>
-          <div className="gs-species-profile__coverage">
-            <div><span>Latitude</span><strong>{profile.latitudeRange[0].toFixed(1)}° to {profile.latitudeRange[1].toFixed(1)}°</strong></div>
-            <div><span>Longitude</span><strong>{profile.longitudeRange[0].toFixed(1)}° to {profile.longitudeRange[1].toFixed(1)}°</strong></div>
-          </div>
-          <p className="gs-species-profile__subheading">Environmental range</p>
-          <div className="gs-species-profile__env">
-            {ENV_VARIABLE_KEYS.map((key) => {
-              const meta = ENV_VARIABLE_META[key];
-              const [min, max] = profile.environmentalRanges[key];
-              return (
-                <div key={key}>
-                  <span>{meta.label}</span>
-                  <strong>{min.toFixed(meta.decimals)} – {max.toFixed(meta.decimals)}{meta.unit ? ` ${meta.unit}` : ""}</strong>
-                </div>
-              );
-            })}
-          </div>
-        </>
-      )}
+      <h3 className="gs-species-profile__name">{profile.scientificName}</h3>
+      <div className="gs-species-profile__count">
+        <strong>{formatCount(profile.occurrenceCount)}</strong>
+        <span>observed occurrences</span>
+      </div>
+      <div className="gs-species-profile__coverage">
+        <div><span>Latitude</span><strong>{profile.latitudeRange[0].toFixed(1)}° to {profile.latitudeRange[1].toFixed(1)}°</strong></div>
+        <div><span>Longitude</span><strong>{profile.longitudeRange[0].toFixed(1)}° to {profile.longitudeRange[1].toFixed(1)}°</strong></div>
+      </div>
+      <p className="gs-species-profile__subheading">Environmental range</p>
+      <div className="gs-species-profile__env">
+        {ENV_VARIABLE_KEYS.map((key) => {
+          const meta = ENV_VARIABLE_META[key];
+          const [min, max] = profile.environmentalRanges[key];
+          return (
+            <div key={key}>
+              <span>{meta.label}</span>
+              <strong>{min.toFixed(meta.decimals)} – {max.toFixed(meta.decimals)}{meta.unit ? ` ${meta.unit}` : ""}</strong>
+            </div>
+          );
+        })}
+      </div>
     </section>
   );
 }

@@ -9,7 +9,6 @@ dist/
 *.pt
 *.keras
 geosea/backend/yolov8n.pt
-geosea/backend/seaweed_model/
 geosea/backend/uploads/
 
 # Python artifacts

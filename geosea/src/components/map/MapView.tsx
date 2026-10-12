@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { MapContainer, TileLayer, WMSTileLayer, CircleMarker, Rectangle, Tooltip, useMap, useMapEvents, Pane, ImageOverlay } from "react-leaflet";
+import { MapContainer, TileLayer, CircleMarker, Rectangle, Tooltip, useMap, useMapEvents } from "react-leaflet";
 import type {
   BaseMapStyle,
   EnvGridCell,
@@ -23,8 +23,6 @@ import {
 import { getPrediction } from "@/services/predictionService";
 import { FINAL_MODEL } from "@/services/modelConfig";
 import { formatCoordinate } from "@/utils/formatters";
-import { useOverlays } from "@/overlays/useOverlays";
-import { OverlayControls } from "@/overlays/OverlayControls";
 import "./MapView.css";
 
 const TILE_LAYERS: Record<BaseMapStyle, { url: string; attribution: string }> = {
@@ -74,6 +72,7 @@ interface MapViewProps {
   fitSignal: number;
   /** "browse" reads observed records on click (existing behavior); "predict" runs a habitat suitability lookup instead. */
   interactionMode: InteractionMode;
+  onSelectedLocationChange: (location: MapLocation | null) => void;
 }
 
 function cellSizeForZoom(zoom: number): number {
@@ -159,7 +158,7 @@ function stopMapPropagation(event: { originalEvent?: Event }) {
   event.originalEvent?.stopPropagation();
 }
 
-/** In prediction mode, a plain map click (not on a marker/cell) picks a location. */
+/** In prediction/verification mode, a plain map click picks a location. */
 function MapClickController({ onClick }: { onClick: (lat: number, lng: number) => void }) {
   useMapEvents({
     click: (e) => onClick(e.latlng.lat, e.latlng.lng),
@@ -234,7 +233,7 @@ function DensityPanel({ cell, filteredIndices, onClose }: { cell: GridCell; filt
       <div className="gs-density-panel__grid">
         <div><span>Presence</span><strong>{cell.presenceCount.toLocaleString()}</strong></div>
         <div><span>Pseudo-absence</span><strong>{cell.absenceCount.toLocaleString()}</strong></div>
-        <div><span>Species</span><strong>{summary.speciesCount.toLocaleString()}</strong></div>
+        <div><span>Canonical species names</span><strong>{summary.speciesCount.toLocaleString()}</strong></div>
       </div>
       <p className="gs-density-panel__note">Density is calculated from the currently active filters and observed GeoSea records.</p>
     </div>
@@ -249,6 +248,7 @@ export function MapView({
   baseMapStyle,
   fitSignal,
   interactionMode,
+  onSelectedLocationChange,
 }: MapViewProps) {
   const [viewport, setViewport] = useState<{ bounds: MapBounds; zoom: number } | null>(null);
   const [selectedRecord, setSelectedRecord] = useState<OccurrenceRecord | null>(null);
@@ -261,8 +261,6 @@ export function MapView({
   const predictionAbortRef = useRef<AbortController | null>(null);
   const [selectedDensityCell, setSelectedDensityCell] = useState<GridCell | null>(null);
 
-  const overlayTools = useOverlays();
-
   function handlePredictClick(lat: number, lng: number) {
     const location: MapLocation = { latitude: lat, longitude: lng };
     const requestId = ++predictionRequestRef.current;
@@ -271,6 +269,7 @@ export function MapView({
     predictionAbortRef.current = controller;
 
     setPredictedLocation(location);
+    onSelectedLocationChange(location);
     setPrediction(null);
     setPredictionStatus("loading");
     setSelectedRecord(null);
@@ -300,20 +299,33 @@ export function MapView({
       });
   }
 
+  function handleVerificationClick(lat: number, lng: number) {
+    const location: MapLocation = { latitude: lat, longitude: lng };
+    predictionAbortRef.current?.abort();
+    predictionRequestRef.current += 1;
+    setPredictedLocation(location);
+    onSelectedLocationChange(location);
+    setPrediction(null);
+    setPredictionStatus("loaded");
+    setSelectedRecord(null);
+    setSelectedDensityCell(null);
+  }
+
   // Keep only one active analysis panel at a time. Prediction mode uses the
   // live Bio-ORACLE/Random Forest path; density mode uses the loaded occurrence data.
   useEffect(() => {
     setSelectedRecord(null);
     setSelectedDensityCell(null);
-    if (interactionMode !== "predict") {
+    if (interactionMode !== "predict" && interactionMode !== "verification") {
       predictionAbortRef.current?.abort();
       predictionAbortRef.current = null;
       predictionRequestRef.current += 1;
       setPredictedLocation(null);
+      onSelectedLocationChange(null);
       setPrediction(null);
       setPredictionStatus("loaded");
     }
-  }, [interactionMode]);
+  }, [interactionMode, onSelectedLocationChange]);
 
   useEffect(() => () => {
     predictionAbortRef.current?.abort();
@@ -424,54 +436,13 @@ export function MapView({
         keyboard={true}
       >
         <TileLayer url={tiles.url} attribution={tiles.attribution} />
-        <Pane name="gs-overlays" style={{ zIndex: 250 }} />
-        {overlayTools.activeOverlays.map(overlay => {
-          if (!overlay.url) return null;
-          if (overlay.type === 'tile') {
-            return (
-              <TileLayer 
-                key={overlay.id} 
-                url={overlay.url} 
-                attribution={overlay.attribution} 
-                opacity={overlayTools.overlayStates[overlay.id]?.opacity} 
-                pane="gs-overlays"
-                maxNativeZoom={overlay.maxNativeZoom}
-                errorTileUrl="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNkYAAAAAYAAjCB0C8AAAAASUVORK5CYII="
-              />
-            );
-          }
-          if (overlay.type === 'wms') {
-            return (
-              <WMSTileLayer
-                key={overlay.id}
-                url={overlay.url}
-                layers="GEBCO_LATEST"
-                format="image/png"
-                transparent={true}
-                attribution={overlay.attribution}
-                opacity={overlayTools.overlayStates[overlay.id]?.opacity}
-                pane="gs-overlays"
-              />
-            );
-          }
-          if (overlay.type === 'image' && overlay.bounds) {
-            return (
-              <ImageOverlay
-                key={overlay.id}
-                url={overlay.url}
-                bounds={overlay.bounds}
-                opacity={overlayTools.overlayStates[overlay.id]?.opacity}
-                pane="gs-overlays"
-              />
-            );
-          }
-          return null;
-        })}
         <MapPanControls />
         <FitBoundsController bounds={dataBounds} signal={fitSignal} />
         {fitToCell && <FitBoundsController bounds={fitToCell.bounds} signal={fitToCell.signal} />}
         <ViewportController onChange={(bounds, zoom) => setViewport({ bounds, zoom })} />
-        {interactionMode === "predict" && <MapClickController onClick={handlePredictClick} />}
+        {(interactionMode === "predict" || interactionMode === "verification") && (
+          <MapClickController onClick={interactionMode === "verification" ? handleVerificationClick : handlePredictClick} />
+        )}
 
         {envMode &&
           envMeta &&
@@ -497,6 +468,8 @@ export function MapView({
                     stopMapPropagation(event);
                     if (interactionMode === "predict") {
                       handlePredictClick(cell.latCenter, cell.lngCenter);
+                    } else if (interactionMode === "verification") {
+                      handleVerificationClick(cell.latCenter, cell.lngCenter);
                     } else {
                       // Even when observations are aggregated, clicking a cell
                       // should immediately show the actual observation behind it.
@@ -596,6 +569,8 @@ export function MapView({
                       stopMapPropagation(event);
                       if (interactionMode === "predict") {
                         handlePredictClick(marker.lat, marker.lng);
+                      } else if (interactionMode === "verification") {
+                        handleVerificationClick(marker.lat, marker.lng);
                       } else {
                         setSelectedRecord(getRecordAt(marker.index));
                       }
@@ -637,6 +612,8 @@ export function MapView({
                   stopMapPropagation(event);
                   if (interactionMode === "predict") {
                     handlePredictClick(record.latitude, record.longitude);
+                  } else if (interactionMode === "verification") {
+                    handleVerificationClick(record.latitude, record.longitude);
                   } else {
                     setSelectedRecord(record);
                   }
@@ -657,7 +634,7 @@ export function MapView({
             </CircleMarker>
           ))}
 
-        {interactionMode === "predict" && predictedLocation && (
+        {(interactionMode === "predict" || interactionMode === "verification") && predictedLocation && (
           <CircleMarker
             center={[predictedLocation.latitude, predictedLocation.longitude]}
             radius={9}
@@ -709,25 +686,12 @@ export function MapView({
           prediction={prediction}
           onClose={() => {
             setPredictedLocation(null);
+            onSelectedLocationChange(null);
             setPrediction(null);
           }}
         />
       )}
 
-      {overlayTools.isEnabledGlobal && (
-        <div style={{ position: 'absolute', top: '120px', left: '14px', zIndex: 500, width: '260px' }}>
-          <OverlayControls
-            masterSwitch={overlayTools.masterSwitch}
-            toggleMasterSwitch={overlayTools.toggleMasterSwitch}
-            overlayStates={overlayTools.overlayStates}
-            toggleOverlay={overlayTools.toggleOverlay}
-            setOpacity={overlayTools.setOpacity}
-            setDate={overlayTools.setDate}
-            setUrl={overlayTools.setUrl}
-            setBounds={overlayTools.setBounds}
-          />
-        </div>
-      )}
     </div>
   );
 }

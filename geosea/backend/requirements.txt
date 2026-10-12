@@ -12,3 +12,5 @@ torch>=2.0.0
 torchvision>=0.15.0
 keras>=3.0.0
 h5py>=3.10.0
+earthengine-api>=1.5,<2
+python-dotenv>=1.0,<2

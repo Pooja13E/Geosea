@@ -1,10 +1,9 @@
 import "./Header.css";
 
 /**
- * Top app header. The dashboard currently has a single user-facing view
- * (the map), so there is no view-switching nav here anymore — Model
- * Performance and Reports were removed from navigation. This component
- * intentionally takes no props; see App.tsx.
+ * Top-level navigation for the two user-facing GeoSea workflows.
+ * The main map remains the habitat/environment dashboard; Seaweed Identification
+ * reuses the same map with an image-identification and GeoSea-evidence side panel.
  */
 export interface HeaderProps {
   activeView?: "dashboard" | "analysis";

@@ -43,6 +43,7 @@ function App() {
   const [baseMapStyle, setBaseMapStyle] = useState<BaseMapStyle>("standard");
   const [fitSignal, setFitSignal] = useState(0);
   const [interactionMode, setInteractionMode] = useState<InteractionMode>("browse");
+  const [selectedPredictionLocation, setSelectedPredictionLocation] = useState<{ latitude: number; longitude: number } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -132,6 +133,14 @@ function App() {
       {activeView === "dashboard" ? (
         <>
           <StatsBanner summary={fullSummary} />
+          {selectedPredictionLocation && (
+            <div className="gs-selected-location-banner" role="status">
+              <span className="gs-selected-location-banner__label">Selected prediction location</span>
+              <strong>{selectedPredictionLocation.latitude.toFixed(4)}° {selectedPredictionLocation.latitude >= 0 ? "N" : "S"}</strong>
+              <span className="gs-selected-location-banner__separator">·</span>
+              <strong>{selectedPredictionLocation.longitude.toFixed(4)}° {selectedPredictionLocation.longitude >= 0 ? "E" : "W"}</strong>
+            </div>
+          )}
           <div className="gs-app__body">
             <Sidebar
               summary={fullSummary}
@@ -158,14 +167,15 @@ function App() {
               baseMapStyle={baseMapStyle}
               fitSignal={fitSignal}
               interactionMode={interactionMode}
+              onSelectedLocationChange={setSelectedPredictionLocation}
             />
           </div>
         </>
-      ) : (
-        <div className="gs-app__body" style={{justifyContent: 'center', backgroundColor: '#f4f6f8', overflowY: 'auto'}}>
+      ) : activeView === "analysis" ? (
+        <div className="gs-app__body gs-app__body--analysis">
           <ImageAnalysis />
         </div>
-      )}
+      ) : null}
     </div>
   );
 }

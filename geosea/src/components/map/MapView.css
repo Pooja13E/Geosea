@@ -239,3 +239,6 @@
   line-height: 1.5;
   color: var(--gs-ink-400);
 }
+
+/* Keep the map first in the new map + right-controls layout. */
+.gs-map { order: 2; }
