@@ -1,0 +1,20 @@
+                          precision    recall  f1-score   support
+
+       Caulerpa_racemosa     0.8750    0.8750    0.8750         8
+      Caulerpa_serrulata     0.7143    0.6250    0.6667         8
+      Colpomenia_sinuosa     0.6667    0.7500    0.7059         8
+Dictyosphaeria_cavernosa     1.0000    0.5000    0.6667         8
+      Dictyota_dichotoma     1.0000    0.8750    0.9333         8
+      Halimeda_macroloba     0.7273    1.0000    0.8421         8
+           Halimeda_tuna     0.6667    0.5000    0.5714         8
+  Hormophysa_cuneiformis     0.7778    0.8750    0.8235         8
+Hydroclathrus_clathratus     0.7000    0.8750    0.7778         8
+     Lobophora_variegata     0.8889    1.0000    0.9412         8
+       Turbinaria_ornata     0.7500    0.7500    0.7500         8
+            Ulva_lactuca     0.8750    0.8750    0.8750         8
+
+                accuracy                         0.7917        96
+               macro avg     0.8035    0.7917    0.7857        96
+            weighted avg     0.8035    0.7917    0.7857        96
+
+Macro-F1: 0.7857

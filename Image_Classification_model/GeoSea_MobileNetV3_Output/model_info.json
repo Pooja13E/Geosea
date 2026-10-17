@@ -1,0 +1,28 @@
+{
+  "architecture": "MobileNetV3-Large",
+  "device": "cpu",
+  "num_classes": 12,
+  "class_names": [
+    "Caulerpa_racemosa",
+    "Caulerpa_serrulata",
+    "Colpomenia_sinuosa",
+    "Dictyosphaeria_cavernosa",
+    "Dictyota_dichotoma",
+    "Halimeda_macroloba",
+    "Halimeda_tuna",
+    "Hormophysa_cuneiformis",
+    "Hydroclathrus_clathratus",
+    "Lobophora_variegata",
+    "Turbinaria_ornata",
+    "Ulva_lactuca"
+  ],
+  "train_images": 420,
+  "validation_images": 84,
+  "test_images": 96,
+  "best_validation_accuracy": 0.6785714285714286,
+  "best_epoch_in_history": 2,
+  "test_accuracy": 0.625,
+  "test_macro_f1": 0.6050059459231286,
+  "model_size_mb": 16.28568744659424,
+  "approx_inference_ms_per_image": 37.9843125001571
+}

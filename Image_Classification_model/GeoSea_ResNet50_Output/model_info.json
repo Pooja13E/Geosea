@@ -1,0 +1,33 @@
+{
+    "model": "ResNet-50",
+    "num_classes": 12,
+    "classes": [
+        "Caulerpa_racemosa",
+        "Caulerpa_serrulata",
+        "Colpomenia_sinuosa",
+        "Dictyosphaeria_cavernosa",
+        "Dictyota_dichotoma",
+        "Halimeda_macroloba",
+        "Halimeda_tuna",
+        "Hormophysa_cuneiformis",
+        "Hydroclathrus_clathratus",
+        "Lobophora_variegata",
+        "Turbinaria_ornata",
+        "Ulva_lactuca"
+    ],
+    "image_size": 224,
+    "batch_size": 8,
+    "device": "cpu",
+    "head_epochs_configured": 5,
+    "finetune_epochs_configured": 8,
+    "best_epoch": 13,
+    "best_validation_accuracy": 0.8571428571428571,
+    "test_accuracy": 0.7916666666666666,
+    "macro_f1": 0.7857138761937522,
+    "model_size_mb": 90.07313823699951,
+    "approx_inference_ms_per_image": 172.98900833338848,
+    "dataset": "C:\\Users\\rsowj\\OneDrive\\Documents\\MyProjects\\GeoSea\\final\\Geosea-main\\Geosea-main\\Image_Classification_model\\Dataset",
+    "preprocessing": "Resize shortest side to 256, crop to 224, ImageNet normalization",
+    "fine_tuning": "Classification head, then layer4 and classification head",
+    "seed": 42
+}
